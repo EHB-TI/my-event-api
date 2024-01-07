@@ -82,6 +82,122 @@ app.get('/evenementen', (req, res) => {
     });
   });
 
+  // Haal alle comments op
+app.get('/comments', (req, res) => {
+    db.query('SELECT * FROM comments', (err, results) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+        } else {
+            res.status(200).json(results);
+        }
+    });
+});
+
+// Haal een enkele comment op
+app.get('/comments/:id', (req, res) => {
+    db.query('SELECT * FROM comments WHERE id = ?', [req.params.id], (err, results) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+        } else {
+            res.status(200).json(results[0]);
+        }
+    });
+});
+
+// Maak een nieuwe comment aan
+app.post('/comments', (req, res) => {
+    const { evenement_id, gebruiker_id, tekst } = req.body;
+    if (!evenement_id || !gebruiker_id || !tekst) {
+        return res.status(400).json({ error: "Alle velden zijn vereist" });
+    }
+
+    const query = 'INSERT INTO comments (evenement_id, gebruiker_id, tekst) VALUES (?, ?, ?)';
+    db.query(query, [evenement_id, gebruiker_id, tekst], (err, result) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+        } else {
+            res.status(201).json({ message: 'Comment aangemaakt', commentId: result.insertId });
+        }
+    });
+});
+
+// Werk een comment bij
+app.put('/comments/:id', (req, res) => {
+    const { tekst } = req.body;
+    const query = 'UPDATE comments SET tekst = ? WHERE id = ?';
+
+    db.query(query, [tekst, req.params.id], (err, result) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+        } else {
+            res.status(200).json({ message: 'Comment bijgewerkt' });
+        }
+    });
+});
+
+// Haal alle comments op
+app.get('/comments', (req, res) => {
+    db.query('SELECT * FROM comments', (err, results) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+        } else {
+            res.status(200).json(results);
+        }
+    });
+});
+
+// Haal een enkele comment op
+app.get('/comments/:id', (req, res) => {
+    db.query('SELECT * FROM comments WHERE id = ?', [req.params.id], (err, results) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+        } else {
+            res.status(200).json(results[0]);
+        }
+    });
+});
+
+// Maak een nieuwe comment aan
+app.post('/comments', (req, res) => {
+    const { evenement_id, gebruiker_id, tekst } = req.body;
+    if (!evenement_id || !gebruiker_id || !tekst) {
+        return res.status(400).json({ error: "Alle velden zijn vereist" });
+    }
+
+    const query = 'INSERT INTO comments (evenement_id, gebruiker_id, tekst) VALUES (?, ?, ?)';
+    db.query(query, [evenement_id, gebruiker_id, tekst], (err, result) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+        } else {
+            res.status(201).json({ message: 'Comment aangemaakt', commentId: result.insertId });
+        }
+    });
+});
+
+// Werk een comment bij
+app.put('/comments/:id', (req, res) => {
+    const { tekst } = req.body;
+    const query = 'UPDATE comments SET tekst = ? WHERE id = ?';
+
+    db.query(query, [tekst, req.params.id], (err, result) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+        } else {
+            res.status(200).json({ message: 'Comment bijgewerkt' });
+        }
+    });
+});
+// Verwijder een comment
+app.delete('/comments/:id', (req, res) => {
+    db.query('DELETE FROM comments WHERE id = ?', [req.params.id], (err, result) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+        } else {
+            res.status(200).json({ message: 'Comment verwijderd' });
+        }
+    });
+});
+
   app.listen(port, () => {
     console.log(`Server luistert op poort ${port}`);
   });
