@@ -40,6 +40,20 @@ app.get('/evenementen', (req, res) => {
   // Werk een evenement bij
   app.put('/evenementen/:id', (req, res) => {
     const { naam, beschrijving, locatie, start_tijd, eind_tijd } = req.body;
+
+      // Controleer of de velden niet leeg zijn en valideer de naam
+    if (!naam || typeof naam !== 'string' || /\d/.test(naam)) {
+        return res.status(400).send('Naam mag niet leeg zijn en geen getallen bevatten.');
+      }
+      if (!locatie || typeof locatie !== 'string') {
+        return res.status(400).send('Locatie mag niet leeg zijn.');
+      }
+      if (!start_tijd || new Date(start_tijd).toString() === 'Invalid Date') {
+        return res.status(400).send('Ongeldige starttijd.');
+      }
+      if (!eind_tijd || new Date(eind_tijd).toString() === 'Invalid Date') {
+        return res.status(400).send('Ongeldige eindtijd.');
+      }
     const query = 'UPDATE evenementen SET naam = ?, beschrijving = ?, locatie = ?, start_tijd = ?, eind_tijd = ? WHERE id = ?';
     db.query(query, [naam, beschrijving, locatie, start_tijd, eind_tijd, req.params.id], (err, results) => {
       if (err) {
@@ -49,26 +63,33 @@ app.get('/evenementen', (req, res) => {
       }
     });
   });
-
   app.post('/evenementen', (req, res) => {
-  const { naam, beschrijving, locatie, start_tijd, eind_tijd } = req.body;
-
-  // Eenvoudige validatie
-  if (!naam || !locatie || !start_tijd || !eind_tijd) {
-    return res.status(400).send('Alle velden zijn vereist.');
-  }
-
-  const query = 'INSERT INTO evenementen (naam, beschrijving, locatie, start_tijd, eind_tijd) VALUES (?, ?, ?, ?, ?)';
-  db.query(query, [naam, beschrijving, locatie, start_tijd, eind_tijd], (err, results) => {
-    if (err) {
-      console.error(err); // Voeg dit toe om de fout te loggen
-      res.status(500).send('Fout bij het aanmaken van het evenement.');
-    } else {
-      res.status(201).send(`Evenement aangemaakt met ID: ${results.insertId}`);
+    const { naam, beschrijving, locatie, start_tijd, eind_tijd } = req.body;
+  
+   
+    if (!naam || typeof naam !== 'string' || /\d/.test(naam)) {
+      return res.status(400).send('Naam mag niet leeg zijn en geen getallen bevatten.');
     }
+    if (!locatie || typeof locatie !== 'string') {
+      return res.status(400).send('Locatie mag niet leeg zijn.');
+    }
+    if (!start_tijd || new Date(start_tijd).toString() === 'Invalid Date') {
+      return res.status(400).send('Ongeldige starttijd.');
+    }
+    if (!eind_tijd || new Date(eind_tijd).toString() === 'Invalid Date') {
+      return res.status(400).send('Ongeldige eindtijd.');
+    }
+  
+    const query = 'INSERT INTO evenementen (naam, beschrijving, locatie, start_tijd, eind_tijd) VALUES (?, ?, ?, ?, ?)';
+    db.query(query, [naam, beschrijving, locatie, start_tijd, eind_tijd], (err, results) => {
+      if (err) {
+        console.error(err); // Voeg dit toe om de fout te loggen
+        res.status(500).send('Fout bij het aanmaken van het evenement.');
+      } else {
+        res.status(201).send(`Evenement aangemaakt met ID: ${results.insertId}`);
+      }
+    });
   });
-
-});
   
   // Verwijder een evenement
   app.delete('/evenementen/:id', (req, res) => {
