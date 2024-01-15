@@ -1,4 +1,4 @@
-//https://github.com/EHB-TI/my-event-api.git
+
 const express = require('express');
 const mysql = require('mysql');
 const app = express();
